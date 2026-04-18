@@ -1,0 +1,276 @@
+{
+  "meta": {
+    "title": "kunal.bhatia ~ senior frontend engineer",
+    "description": "Kunal Rajan Bhatia — Senior Frontend Engineer & Project Lead. 15+ years shipping React at scale: micro-frontends, integrations, browser extensions.",
+    "author": "Kunal Rajan Bhatia",
+    "resumeFile": "RESUME_KUNAL_BHATIA.pdf",
+    "profileImage": "me.png",
+    "profileImageAlt": "Kunal Rajan Bhatia — portrait"
+  },
+
+  "brand": {
+    "name": "kunal.bhatia",
+    "initial": "~/"
+  },
+
+  "navLinks": [
+    { "label": "about",      "href": "#about" },
+    { "label": "skills",     "href": "#skills" },
+    { "label": "projects",   "href": "#projects" },
+    { "label": "experience", "href": "#experience" },
+    { "label": "contact",    "href": "#contact" }
+  ],
+
+  "hero": {
+    "terminalTitle": "~/kunal — zsh — 120×32",
+    "promptUser": "kunal",
+    "promptHost": "mumbai",
+    "promptCommand": "whoami",
+    "promptOutput": "senior frontend engineer · project lead",
+    "firstName": "Kunal Rajan",
+    "lastNameAccent": "Bhatia",
+    "description": "I'm a frontend engineer with <strong>15+ years</strong> of experience shipping React at scale. Currently leading frontend work for Intuit's 1099 Tax Center at Persistent Systems — with a track record of architecting micro-frontends, OAuth2 integrations, browser extensions, and Slack apps for Bloomfire, GoTo, and beyond.",
+    "meta": [
+      { "key": "location", "value": "Mumbai, IN" },
+      { "key": "role",     "value": "Project Lead @ Persistent → Intuit" },
+      { "key": "status",   "value": "open to connect", "statusDot": true }
+    ],
+    "actions": [
+      { "label": "view_projects()",       "href": "#projects",                "type": "primary",   "icon": "arrow" },
+      { "label": "download_resume.pdf",   "href": "__RESUME__",               "type": "secondary", "icon": "download", "download": true },
+      { "label": "./contact",             "href": "#contact",                 "type": "ghost" }
+    ]
+  },
+
+  "about": {
+    "sectionNumber": "01",
+    "title": "about",
+    "paragraphs": [
+      "Over 15+ years, I've moved from Flash/ActionScript and PHP to leading React micro-frontends for one of the world's largest financial software companies. Today I work as a <strong>Project Lead at Persistent Systems</strong>, embedded with Intuit — analyzing PRDs, running feasibility studies, leading POCs, and shipping UI that reaches millions of small-business owners at tax time.",
+      "My sweet spot is the intersection of <strong>frontend architecture</strong> and <strong>integration engineering</strong>: <code>OAuth2</code> flows, browser extensions, Slack apps, and enterprise connectors — where the hard problems live in state, permissions, and cross-platform consistency. I've owned end-to-end delivery for Bloomfire's Chrome/Edge extension and Slack app, and led HaloPSA and ConnectWise integrations with GoTo Resolve.",
+      "I care about <strong>performance</strong> (<code>Suspense</code>, lazy loading, profiling), <strong>design systems</strong> (QBDS → IDS migration at Intuit), and the small stuff — accessibility, <code>i18n</code>, feature-flagged rollouts. Outside work, I tinker with Claude-powered MCP servers and a calorie-tracking side project on <code>n8n</code> + <code>Supabase</code>."
+    ],
+    "statsCardTitle": "~/stats.json",
+    "stats": [
+      { "key": "experience",       "value": "15+", "unit": "yrs" },
+      { "key": "companies",        "value": "7",   "unit": "orgs" },
+      { "key": "integrations_led", "value": "10+", "unit": "projects" },
+      { "key": "primary_stack",    "value": "React", "unit": "/TS" },
+      { "key": "education",        "value": "B.E.", "unit": "IT" },
+      { "key": "languages",        "value": "3",   "unit": "spoken" }
+    ]
+  },
+
+  "skills": {
+    "sectionNumber": "02",
+    "title": "skills",
+    "groups": [
+      {
+        "name": "frontend",
+        "items": ["React", "TypeScript", "JavaScript", "Material-UI", "Tailwind CSS", "SASS", "Vite", "React Hooks", "i18n"]
+      },
+      {
+        "name": "backend",
+        "items": ["Node.js", "Express", "REST APIs", "OAuth 2.0", "Webhooks", "AWS Lambda", "DynamoDB", "PostgreSQL", "Supabase"]
+      },
+      {
+        "name": "architecture",
+        "items": ["Micro-frontends", "Design Systems", "Feature Flags", "Forge 2.0", "Slack Bolt SDK", "Chrome/Edge APIs", "MCP Servers"]
+      },
+      {
+        "name": "devops_testing",
+        "items": ["Jest", "Cypress", "GitHub Actions", "Jenkins", "Docker", "GCP", "AWS", "Azure"]
+      }
+    ]
+  },
+
+  "projects": {
+    "sectionNumber": "03",
+    "title": "featured_projects",
+    "items": [
+      {
+        "label": "intuit / 1099-tax-center",
+        "tag": "FEATURED",
+        "featured": true,
+        "title": "Intuit 1099 Tax Center",
+        "role": "Project Lead · Frontend",
+        "description": "Led frontend development across multiple micro-frontend repositories for Intuit's 1099 tax filing platform. Spearheaded the end-to-end redesign of the shopping page — replacing the legacy Deluxe Forms experience — and drove IES branding upgrades across the contractor payment ecosystem.",
+        "bullets": [
+          "Architected and shipped the full new shopping page UI, replacing legacy Deluxe Forms",
+          "Led the IES branding upgrade — replaced deprecated design tokens, aligned icons and color schemes",
+          "Implemented feature flagging for Atlas pricing changes and state pricing logic for controlled rollouts",
+          "Optimized performance via Suspense / lazy loading, deferred generate calls, and targeted profiling",
+          "Migrated QBDS → IDS design system across repos; applied state filing updates and localization"
+        ],
+        "stack": ["React", "IDS", "Micro-frontend", "Feature Flags", "i18n", "Suspense"]
+      },
+      {
+        "label": "bloomfire / browser-extension",
+        "tag": "SHIPPED",
+        "title": "Browser Extension — Chrome & Edge",
+        "role": "Lead Engineer",
+        "description": "Secure, branded Chrome/Edge extension that lets users search, query AI, and access bookmarks without leaving their workflow — integrated with Bloomfire's platform.",
+        "bullets": [
+          "Architected OAuth2 flow with session persistence and community-level access control",
+          "Designed persistent right-side docking, dynamic theming, multi-community switching",
+          "Directed CI/CD pipeline for automated linting, testing, and store submissions"
+        ],
+        "stack": ["React", "TypeScript", "Vite", "Tailwind", "OAuth2", "Jest"]
+      },
+      {
+        "label": "bloomfire / slack-app",
+        "tag": "SHIPPED",
+        "title": "Bloomfire Slack Application",
+        "role": "Lead Engineer · End-to-End Owner",
+        "description": "A marketplace-ready Slack app enabling seamless knowledge access, AI-powered search, and community interactions directly inside Slack.",
+        "bullets": [
+          "Architected dual OAuth2 between Slack and Bloomfire with secure token lifecycle management",
+          "Built Slack App Home with dynamic tabs for AI queries, search history, and community context",
+          "Implemented slash commands, @mentions, and link unfurling with access control"
+        ],
+        "stack": ["Slack Bolt SDK", "AWS Lambda", "DynamoDB", "OAuth2", "Node.js"]
+      },
+      {
+        "label": "goto / halo-integration",
+        "tag": "INTEGRATION",
+        "title": "HaloPSA × GoTo Resolve",
+        "role": "Integration Lead",
+        "description": "Integrated HaloPSA with GoTo Resolve — delivering remote support, asset sync, and automated ticketing inside Halo to streamline MSP workflows.",
+        "bullets": [
+          "Built workflows for remote session initiation and alert acknowledgment from within Halo",
+          "Webhook-based ticketing triggered by asset performance failures for proactive incident management",
+          "Integrated asset sync for accurate device mapping and tenant alignment"
+        ],
+        "stack": ["React", "TypeScript", "Webhooks", "Jenkins", "REST APIs"]
+      },
+      {
+        "label": "goto / connectwise",
+        "tag": "INTEGRATION",
+        "title": "ConnectWise × GoTo Resolve",
+        "role": "Integration Lead",
+        "description": "Enabled remote support and alert-driven ticketing inside ConnectWise — managing cross-functional collaboration and delivering within tight deadlines.",
+        "bullets": [
+          "Architected configuration pods and device syncing to reduce context-switching",
+          "Alert-based ticket creation with contextual links to GTRe device views and actions",
+          "API integration for tenant and device mapping across platforms"
+        ],
+        "stack": ["React", "TypeScript", "REST APIs", "Jenkins"]
+      },
+      {
+        "label": "goto / resolve-intune",
+        "tag": "INTEGRATION",
+        "title": "Resolve × Microsoft Intune",
+        "role": "Integration Lead",
+        "description": "Unified device management inside Resolve — streamlining onboarding of Intune-managed devices with centralized compliance and configuration.",
+        "bullets": [
+          "Designed setup and pairing workflows for Intune-managed device onboarding",
+          "Centralized configuration and compliance management directly in Resolve",
+          "Implemented script execution to install Resolve applet on Intune devices"
+        ],
+        "stack": ["React", "TypeScript", "MS Graph", "Jenkins"]
+      },
+      {
+        "label": "goto / rescue-jira",
+        "tag": "FULL-STACK",
+        "title": "Rescue × Jira Service Desk",
+        "role": "Full-Stack Engineer",
+        "description": "Engineered a Rescue remote support app inside Jira Service Desk — secure auth, session history, telemetry, and multilingual UI.",
+        "bullets": [
+          "Built on Forge 2.0 with Node and React for a responsive support-desk experience",
+          "In-Jira Rescue session initiation with real-time links and session history",
+          "Added telemetry (Segment + Amplitude) and i18n for global accessibility"
+        ],
+        "stack": ["Forge 2.0", "React", "Node", "OAuth2", "i18n"]
+      }
+    ]
+  },
+
+  "experience": {
+    "sectionNumber": "04",
+    "title": "experience",
+    "items": [
+      {
+        "date": "Jan 2023 — Present",
+        "role": "Project Lead",
+        "company": "Persistent Systems",
+        "description": "Lead end-to-end delivery for Intuit engagements: analyzing PRDs, preparing feasibility documents, running POCs, managing sprint boards, and coordinating developers and QA through daily stand-ups, progressive demos, and stakeholder sign-offs."
+      },
+      {
+        "date": "Dec 2020 — Dec 2023",
+        "role": "Frontend React Developer",
+        "company": "Quincus",
+        "description": "Built dynamic pages and a universal UI component library used across teams. Wrote integration and component-level Cypress tests. Built Node/Express/TypeScript APIs for frontend integration."
+      },
+      {
+        "date": "Feb 2019 — Nov 2020",
+        "role": "React Developer",
+        "company": "Dailybooks",
+        "description": "Led frontend development for a Tally-like accounting web and mobile application. Built automated flows for purchase, sales, expenses, and income — including seamless historical-data migration from Tally."
+      },
+      {
+        "date": "Dec 2015 — Feb 2019",
+        "role": "Senior Player Developer",
+        "company": "Hungama Digital Media",
+        "description": "Designed and implemented a unified video/audio player across Hungama properties and affiliate platforms — a single JS source with flexible customization. Owned integration support and full-stack debugging."
+      },
+      {
+        "date": "Nov 2013 — Nov 2015",
+        "role": "Player Developer",
+        "company": "Network 18",
+        "description": "Managed the media player across Moneycontrol, Firstpost, News18, IBNLive and others. Built players with vanilla JS/jQuery and HTML5 and supported affiliate-platform integrations."
+      },
+      {
+        "date": "Apr 2011 — Nov 2013",
+        "role": "Flash / ActionScript 3.0 Developer",
+        "company": "MRCC",
+        "description": "Crafted content screens for e-learning courses with HTML/CSS and ActionScript 3.0 — building interactive animations and programmed content for enhanced learner engagement."
+      },
+      {
+        "date": "Jan 2010 — Mar 2011",
+        "role": "Flex / Flash Developer",
+        "company": "Tricom India Ltd.",
+        "description": "Developed Flex/Flash projects integrated with PHP backends and contributed to Xcelsius-based Business Intelligence dashboards."
+      }
+    ]
+  },
+
+  "education": {
+    "sectionNumber": "05",
+    "title": "education",
+    "items": [
+      {
+        "degree": "B.E. Information Technology",
+        "institution": "Thadomal Shahani College · Mumbai University",
+        "year": "2009"
+      },
+      {
+        "degree": "Diploma in Information Technology",
+        "institution": "Institute of Technology, Ulhasnagar",
+        "year": "2006"
+      }
+    ]
+  },
+
+  "contact": {
+    "sectionNumber": "06",
+    "terminalTitle": "~/contact — let's build something",
+    "promptUser": "kunal",
+    "promptHost": "mumbai",
+    "promptCommand": "echo $AVAILABILITY",
+    "promptOutput": "open_to_connect = true",
+    "heading": "Let's build something",
+    "headingAccent": "together.",
+    "description": "Open to senior frontend engineering roles, integration architecture projects, and interesting collaborations. Email is the fastest way to reach me — I usually respond within a day.",
+    "actions": [
+      { "label": "kunal.bhatia@hotmail.com", "href": "mailto:kunal.bhatia@hotmail.com", "type": "primary",   "icon": "email" },
+      { "label": "resume.pdf",                "href": "__RESUME__",                     "type": "secondary", "icon": "download", "download": true },
+      { "label": "linkedin",                  "href": "https://www.linkedin.com/in/kunal-r-bhatia", "type": "ghost", "icon": "linkedin", "external": true },
+      { "label": "github",                    "href": "https://github.com/kunalrbhatia",           "type": "ghost", "icon": "github",   "external": true }
+    ]
+  },
+
+  "footer": {
+    "leftText": "© {YEAR} kunal.bhatia — crafted in mumbai",
+    "rightText": "v1.0 · built with ☕ and caffeine"
+  }
+}
