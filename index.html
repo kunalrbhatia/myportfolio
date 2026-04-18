@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#0a0d12" />
+<!-- Favicon: inline SVG — a mint terminal prompt on a dark tile -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230a0d12'/%3E%3Cpath d='M14 22 L22 32 L14 42' stroke='%235eead4' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3Crect x='28' y='40' width='22' height='4' rx='1' fill='%235eead4'/%3E%3C/svg%3E" />
+<!-- title, description, author are populated from data.json at runtime -->
+<title>Loading…</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Geist:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ===== TOKENS ===== */
+  :root {
+    --bg: #0a0d12;
+    --bg-elev: #10141a;
+    --bg-terminal: #070a0e;
+    --grid: rgba(120, 225, 180, 0.035);
+    --line: #1d242e;
+    --line-strong: #2a3340;
+
+    --fg: #e6edf3;
+    --fg-soft: #b4bcc8;
+    --fg-muted: #6e7785;
+    --fg-dim: #4a525e;
+
+    --accent: #5eead4;
+    --accent-glow: rgba(94, 234, 212, 0.18);
+    --accent-2: #fbbf77;
+
+    --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+    --font-sans: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    --max-w: 1180px;
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  [data-theme="light"] {
+    --bg: #fafaf7;
+    --bg-elev: #ffffff;
+    --bg-terminal: #f3f3ee;
+    --grid: rgba(20, 90, 70, 0.04);
+    --line: #e5e5df;
+    --line-strong: #cfcfc7;
+    --fg: #0d1117;
+    --fg-soft: #2d3440;
+    --fg-muted: #6b7280;
+    --fg-dim: #9ca3af;
+    --accent: #0d9488;
+    --accent-glow: rgba(13, 148, 136, 0.14);
+    --accent-2: #d97706;
+  }
+
+  /* ===== BASE ===== */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    transition: background 0.4s var(--ease), color 0.4s var(--ease);
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none; z-index: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+  img, svg { max-width: 100%; display: block; }
+  a {
+    color: var(--accent);
+    text-decoration: none;
+    transition: color 0.2s var(--ease), opacity 0.2s var(--ease);
+  }
+  a:hover { opacity: 0.8; }
+  a:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  .skip-link {
+    position: absolute; top: -100px; left: 1rem;
+    background: var(--accent); color: var(--bg);
+    padding: 0.75rem 1rem; z-index: 1000;
+    font-family: var(--font-mono); font-weight: 600; font-size: 0.85rem;
+    transition: top 0.2s var(--ease);
+  }
+  .skip-link:focus { top: 1rem; }
+  .container {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 2;
+  }
+  ::selection { background: var(--accent); color: var(--bg); }
+
+  /* ===== TERMINAL PRIMITIVES ===== */
+  .prompt { font-family: var(--font-mono); color: var(--fg-muted); font-size: 0.85rem; }
+  .prompt .user { color: var(--accent); }
+  .prompt .sep { color: var(--fg-dim); }
+  .prompt .path { color: var(--accent-2); }
+  .prompt .caret { color: var(--fg); }
+  .prompt .cmd { color: var(--fg); }
+  .blink {
+    display: inline-block;
+    width: 8px; height: 1em;
+    background: var(--accent);
+    vertical-align: -2px;
+    margin-left: 2px;
+    animation: blink 1s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ===== HEADER / NAV ===== */
+  header.site-header {
+    position: sticky; top: 0; z-index: 50;
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    background: color-mix(in oklab, var(--bg) 78%, transparent);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s var(--ease);
+  }
+  header.site-header.scrolled { border-bottom-color: var(--line); }
+  .nav { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.9rem 0; }
+  .brand {
+    font-family: var(--font-mono); font-size: 0.95rem; font-weight: 600;
+    color: var(--fg); display: flex; align-items: center; gap: 0.55rem;
+  }
+  .brand .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent-glow);
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.6; transform: scale(0.85); } }
+  .brand .tilde { color: var(--accent); }
+  .nav-links {
+    display: flex; gap: 0.25rem;
+    list-style: none; margin: 0; padding: 0;
+    font-family: var(--font-mono); font-size: 0.85rem;
+  }
+  .nav-links a {
+    color: var(--fg-soft); padding: 0.45rem 0.85rem; border-radius: 4px;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  }
+  .nav-links a::before { content: "./"; color: var(--fg-dim); }
+  .nav-links a:hover { color: var(--accent); background: var(--bg-elev); opacity: 1; }
+  .nav-actions { display: flex; gap: 0.5rem; align-items: center; }
+  .icon-btn {
+    background: transparent; border: 1px solid var(--line); color: var(--fg-soft);
+    width: 36px; height: 36px; border-radius: 4px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s var(--ease), color 0.2s var(--ease), background 0.2s var(--ease);
+  }
+  .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--bg-elev); }
+  .icon-btn svg { width: 15px; height: 15px; transition: transform 0.5s var(--ease); }
+  [data-theme="light"] .icon-btn svg.theme-icon { transform: rotate(180deg); }
+  .menu-btn { display: none; }
+  @media (max-width: 760px) {
+    .nav-links {
+      position: fixed; inset: 58px 0 auto 0;
+      flex-direction: column;
+      background: var(--bg-elev);
+      padding: 1rem;
+      border-bottom: 1px solid var(--line);
+      gap: 0.25rem;
+      transform: translateY(-120%);
+      transition: transform 0.3s var(--ease);
+    }
+    .nav-links.open { transform: translateY(0); }
+    .menu-btn { display: inline-flex; }
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    padding: 0.7rem 1.15rem;
+    font-family: var(--font-mono); font-size: 0.85rem; font-weight: 500;
+    border-radius: 4px; cursor: pointer; border: 1px solid transparent;
+    transition: transform 0.15s var(--ease), background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    text-decoration: none; line-height: 1;
+  }
+  .btn-primary { background: var(--accent); color: var(--bg); font-weight: 600; }
+  .btn-primary:hover { box-shadow: 0 0 0 4px var(--accent-glow); transform: translateY(-1px); opacity: 1; }
+  .btn-secondary { background: var(--bg-elev); color: var(--fg); border-color: var(--line-strong); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); opacity: 1; }
+  .btn-ghost { background: transparent; color: var(--fg-soft); border-color: var(--line); }
+  .btn-ghost:hover { color: var(--accent); border-color: var(--accent); opacity: 1; }
+  .btn svg { width: 14px; height: 14px; }
+
+  /* ===== SECTIONS ===== */
+  section { padding: 5rem 0; position: relative; }
+  @media (min-width: 760px) { section { padding: 7rem 0; } }
+  .section-head {
+    display: flex; align-items: baseline; gap: 1rem;
+    margin-bottom: 3rem; flex-wrap: wrap;
+  }
+  .section-head .section-num { font-family: var(--font-mono); font-size: 0.8rem; color: var(--accent); font-weight: 500; }
+  .section-head h2 {
+    font-family: var(--font-sans); font-weight: 600;
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    letter-spacing: -0.02em; margin: 0; color: var(--fg);
+  }
+  .section-head h2 .accent { color: var(--accent); }
+
+  /* ===== HERO ===== */
+  .hero { padding: 4rem 0 3rem; position: relative; }
+  @media (min-width: 760px) { .hero { padding: 6rem 0 4rem; } }
+  .terminal-window {
+    background: var(--bg-terminal);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.02) inset, 0 20px 40px -20px rgba(0,0,0,0.4);
+  }
+  [data-theme="light"] .terminal-window { box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 12px 40px -16px rgba(0,0,0,0.12); }
+  .terminal-bar {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    background: var(--bg-elev); border-bottom: 1px solid var(--line);
+  }
+  .terminal-bar .lights { display: flex; gap: 0.4rem; }
+  .terminal-bar .lights span { width: 11px; height: 11px; border-radius: 50%; background: var(--line-strong); }
+  .terminal-bar .lights span:nth-child(1) { background: #f87171; }
+  .terminal-bar .lights span:nth-child(2) { background: #fbbf24; }
+  .terminal-bar .lights span:nth-child(3) { background: #34d399; }
+  .terminal-bar .path {
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--fg-muted);
+    margin-left: auto; margin-right: 0.5rem;
+  }
+  .terminal-body { padding: 1.75rem 1.5rem 2rem; }
+  @media (min-width: 760px) { .terminal-body { padding: 2.25rem 2.25rem 2.75rem; } }
+
+  /* Hero grid: content left, portrait right (stacks on mobile) */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  @media (min-width: 860px) {
+    .hero-grid {
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 3rem;
+    }
+  }
+
+  /* Portrait frame — terminal-styled card with ascii corner marks */
+  .hero-portrait {
+    position: relative;
+    width: 220px;
+    max-width: 100%;
+    justify-self: center;
+    padding: 8px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    transition: border-color 0.3s var(--ease), transform 0.4s var(--ease);
+  }
+  @media (min-width: 860px) { .hero-portrait { width: 240px; justify-self: end; } }
+  .hero-portrait:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+  .hero-portrait img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 4px;
+    display: block;
+    filter: saturate(1.05);
+  }
+
+  /* ascii corner markers — decorative */
+  .hero-portrait::before,
+  .hero-portrait::after {
+    content: "+";
+    position: absolute;
+    font-family: var(--font-mono);
+    color: var(--accent);
+    font-size: 0.75rem;
+    line-height: 1;
+    opacity: 0.7;
+  }
+  .hero-portrait::before { top: -4px; left: -4px; }
+  .hero-portrait::after { bottom: -4px; right: -4px; }
+
+  /* caption strip under portrait */
+  .hero-portrait .caption {
+    margin-top: 8px;
+    padding: 0.35rem 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--fg-muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 0.02em;
+  }
+  .hero-portrait .caption .live {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    color: var(--accent);
+  }
+  .hero-portrait .caption .live::before {
+    content: ""; width: 5px; height: 5px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent-glow);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .terminal-line { margin: 0.25rem 0; font-family: var(--font-mono); font-size: 0.88rem; }
+  .hero-title {
+    font-family: var(--font-sans); font-weight: 600;
+    font-size: clamp(2rem, 5.8vw, 3.75rem);
+    line-height: 1.1; letter-spacing: -0.03em;
+    margin: 1.25rem 0 1rem; color: var(--fg);
+  }
+  .hero-title .accent { color: var(--accent); }
+  .hero-desc { font-size: 1rem; color: var(--fg-soft); max-width: 62ch; margin: 0 0 1.75rem; line-height: 1.7; }
+  .hero-desc strong { color: var(--fg); font-weight: 600; }
+  .hero-meta {
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem;
+    font-family: var(--font-mono); font-size: 0.8rem; color: var(--fg-muted);
+    margin-bottom: 2rem; padding: 0.85rem 1rem;
+    border: 1px dashed var(--line); border-radius: 4px; background: var(--bg);
+  }
+  .hero-meta span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .hero-meta .key { color: var(--accent-2); }
+  .hero-meta .status-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 8px rgba(52, 211, 153, 0.5);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+  /* ===== ABOUT ===== */
+  .about-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+  @media (min-width: 900px) { .about-grid { grid-template-columns: 1.55fr 1fr; gap: 3rem; } }
+  .about-text p { color: var(--fg-soft); margin: 0 0 1.1rem; line-height: 1.75; }
+  .about-text strong { color: var(--fg); font-weight: 600; }
+  .about-text code {
+    font-family: var(--font-mono);
+    background: var(--bg-elev); color: var(--accent);
+    padding: 0.1em 0.35em; border-radius: 3px;
+    font-size: 0.85em; border: 1px solid var(--line);
+  }
+  .stats-card {
+    background: var(--bg-terminal); border: 1px solid var(--line);
+    border-radius: 6px; overflow: hidden; align-self: start;
+  }
+  .stats-card-head {
+    font-family: var(--font-mono); font-size: 0.78rem; color: var(--fg-muted);
+    padding: 0.6rem 1rem; background: var(--bg-elev);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .stats-card-head::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .stats-list { list-style: none; margin: 0; padding: 0.5rem 0; }
+  .stats-list li {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 0.55rem 1rem;
+    font-family: var(--font-mono); font-size: 0.85rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .stats-list li:last-child { border-bottom: none; }
+  .stats-list .k { color: var(--fg-muted); }
+  .stats-list .v { color: var(--fg); font-weight: 600; }
+  .stats-list .v .unit { color: var(--accent); font-weight: 400; margin-left: 0.15rem; }
+
+  /* ===== SKILLS ===== */
+  .skills-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+  @media (min-width: 720px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1024px) { .skills-grid { grid-template-columns: repeat(4, 1fr); } }
+  .skill-card {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 6px; overflow: hidden;
+    transition: border-color 0.25s var(--ease), transform 0.25s var(--ease);
+  }
+  .skill-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .skill-head {
+    display: flex; align-items: center; gap: 0.55rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono); font-size: 0.82rem; color: var(--fg-muted);
+    background: var(--bg-terminal);
+  }
+  .skill-head .sig { color: var(--accent); }
+  .skill-head .name { color: var(--fg); font-weight: 600; }
+  .skill-body { padding: 1rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+  .skill-body span {
+    font-family: var(--font-mono); font-size: 0.75rem; color: var(--fg-soft);
+    padding: 0.3rem 0.55rem; border: 1px solid var(--line);
+    border-radius: 3px; background: var(--bg);
+    transition: color 0.2s var(--ease), border-color 0.2s var(--ease);
+  }
+  .skill-body span:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ===== PROJECTS ===== */
+  .projects-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+  @media (min-width: 900px) { .projects-grid { grid-template-columns: repeat(2, 1fr); } }
+  .project {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 6px; overflow: hidden;
+    display: flex; flex-direction: column;
+    transition: border-color 0.3s var(--ease), transform 0.3s var(--ease);
+  }
+  .project:hover { border-color: var(--accent); transform: translateY(-3px); }
+  .project.featured { grid-column: 1 / -1; }
+  .project-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.7rem 1rem;
+    background: var(--bg-terminal); border-bottom: 1px solid var(--line);
+    font-family: var(--font-mono); font-size: 0.78rem;
+  }
+  .project-head .label { color: var(--fg-muted); display: inline-flex; align-items: center; gap: 0.5rem; }
+  .project-head .label::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .project-head .tag {
+    color: var(--accent-2); font-size: 0.72rem;
+    padding: 0.15rem 0.45rem;
+    background: rgba(251, 191, 119, 0.1); border-radius: 3px;
+  }
+  .project-body { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+  .project-title {
+    font-family: var(--font-sans); font-weight: 600;
+    font-size: 1.2rem; margin: 0 0 0.35rem; color: var(--fg);
+    letter-spacing: -0.01em;
+  }
+  .project-role {
+    font-family: var(--font-mono); font-size: 0.72rem;
+    color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+  .project-desc { color: var(--fg-soft); margin: 0 0 1rem; line-height: 1.65; font-size: 0.92rem; flex: 1; }
+  .project-bullets { margin: 0 0 1.25rem; padding: 0; list-style: none; }
+  .project-bullets li {
+    font-size: 0.88rem; color: var(--fg-soft);
+    padding: 0.25rem 0 0.25rem 1.25rem;
+    position: relative; line-height: 1.55;
+  }
+  .project-bullets li::before { content: "▸"; position: absolute; left: 0; color: var(--accent); font-family: var(--font-mono); }
+  .tech-stack { display: flex; flex-wrap: wrap; gap: 0.35rem; padding-top: 1rem; border-top: 1px dashed var(--line); }
+  .tech-stack span {
+    font-family: var(--font-mono); font-size: 0.7rem; color: var(--fg-muted);
+    padding: 0.2rem 0.5rem; border: 1px solid var(--line); border-radius: 3px;
+  }
+
+  /* ===== EXPERIENCE ===== */
+  .timeline { position: relative; padding-left: 0; }
+  @media (min-width: 720px) {
+    .timeline { padding-left: 1.5rem; }
+    .timeline::before {
+      content: ""; position: absolute;
+      left: 0; top: 0.5rem; bottom: 0.5rem; width: 1px;
+      background: linear-gradient(to bottom, var(--line) 0%, var(--line) 90%, transparent);
+    }
+  }
+  .exp {
+    display: grid; grid-template-columns: 1fr; gap: 0.4rem;
+    padding: 1.4rem 0; border-top: 1px solid var(--line);
+    position: relative;
+  }
+  .exp:first-child { border-top: none; padding-top: 0; }
+  @media (min-width: 720px) {
+    .exp { grid-template-columns: 180px 1fr; gap: 2rem; padding: 1.75rem 0; }
+    .exp::before {
+      content: ""; position: absolute;
+      left: -1.85rem; top: 2rem; width: 9px; height: 9px;
+      background: var(--bg); border: 2px solid var(--line-strong);
+      border-radius: 50%;
+      transition: border-color 0.3s var(--ease), background 0.3s var(--ease);
+    }
+    .exp:first-child::before { top: 0.5rem; }
+    .exp:hover::before { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 0 4px var(--accent-glow); }
+  }
+  .exp-date { font-family: var(--font-mono); font-size: 0.78rem; color: var(--fg-muted); padding-top: 0.35rem; }
+  .exp-content h3 {
+    font-family: var(--font-sans); font-weight: 600;
+    font-size: 1.05rem; margin: 0 0 0.15rem; color: var(--fg); letter-spacing: -0.005em;
+  }
+  .exp-content .company {
+    font-family: var(--font-mono); color: var(--accent);
+    font-size: 0.8rem; margin-bottom: 0.65rem; display: inline-block;
+  }
+  .exp-content p { margin: 0; color: var(--fg-soft); line-height: 1.65; font-size: 0.92rem; }
+
+  /* ===== EDUCATION ===== */
+  .edu-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+  @media (min-width: 720px) { .edu-grid { grid-template-columns: repeat(2, 1fr); } }
+  .edu-card {
+    background: var(--bg-elev); border: 1px solid var(--line);
+    border-radius: 6px; padding: 1.35rem;
+    transition: border-color 0.25s var(--ease);
+  }
+  .edu-card:hover { border-color: var(--accent); }
+  .edu-card h3 {
+    font-family: var(--font-sans); font-weight: 600;
+    font-size: 1rem; margin: 0 0 0.35rem; color: var(--fg); letter-spacing: -0.005em;
+  }
+  .edu-card .edu-inst { color: var(--fg-soft); font-size: 0.85rem; margin-bottom: 0.5rem; line-height: 1.5; }
+  .edu-card .edu-year { font-family: var(--font-mono); color: var(--accent); font-size: 0.78rem; }
+
+  /* ===== CONTACT ===== */
+  .contact-terminal {
+    background: var(--bg-terminal); border: 1px solid var(--line);
+    border-radius: 8px; overflow: hidden; position: relative;
+  }
+  .contact-terminal::after {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(circle at 80% 0%, var(--accent-glow) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .contact-body { padding: 2rem 1.5rem; position: relative; z-index: 1; }
+  @media (min-width: 760px) { .contact-body { padding: 3rem; } }
+  .contact-body .typed { font-family: var(--font-mono); font-size: 0.85rem; color: var(--fg-soft); margin-bottom: 1.5rem; }
+  .contact-body .typed .comment { color: var(--fg-dim); }
+  .contact-body h2 {
+    font-family: var(--font-sans); font-weight: 600;
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+    margin: 0 0 1rem; color: var(--fg); letter-spacing: -0.02em;
+  }
+  .contact-body h2 .accent { color: var(--accent); }
+  .contact-body p { color: var(--fg-soft); max-width: 55ch; margin: 0 0 2rem; line-height: 1.7; }
+  .contact-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 2rem 0 2.5rem;
+    border-top: 1px solid var(--line);
+    font-family: var(--font-mono); font-size: 0.78rem; color: var(--fg-muted);
+  }
+  .footer-inner {
+    display: flex; flex-direction: column; gap: 0.75rem;
+    align-items: center; text-align: center;
+  }
+  @media (min-width: 720px) { .footer-inner { flex-direction: row; justify-content: space-between; text-align: left; } }
+  footer .prompt-sm { display: inline-flex; align-items: center; gap: 0.35rem; }
+  footer .prompt-sm::before { content: "$"; color: var(--accent); }
+
+  /* ===== REVEAL ===== */
+  .reveal {
+    opacity: 0; transform: translateY(18px);
+    transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* ===== LOADING / ERROR STATES ===== */
+  .app-loading {
+    min-height: 60vh;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono); font-size: 0.9rem; color: var(--fg-muted);
+  }
+  .app-error {
+    max-width: 640px; margin: 4rem auto; padding: 1.5rem;
+    border: 1px solid #f87171; border-radius: 6px;
+    background: var(--bg-elev);
+    font-family: var(--font-mono); font-size: 0.85rem;
+    color: var(--fg-soft); line-height: 1.7;
+  }
+  .app-error strong { color: #f87171; }
+  .app-error code { color: var(--accent); }
+</style>
+</head>
+
+<body>
+  <a href="#main" class="skip-link">Skip to main content</a>
+
+  <!-- HEADER: populated by renderHeader() -->
+  <header class="site-header" id="siteHeader">
+    <div class="container nav" role="navigation" aria-label="Primary" id="navContainer"></div>
+  </header>
+
+  <!-- MAIN: populated by renderMain() -->
+  <main id="main">
+    <div class="app-loading" id="appLoading">loading data.json…</div>
+  </main>
+
+  <!-- FOOTER: populated by renderFooter() -->
+  <footer>
+    <div class="container footer-inner" id="footerInner"></div>
+  </footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ============================================================
+  // ICONS — single source of SVG paths
+  // ============================================================
+  const ICONS = {
+    download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 5l7 7-7 7"/></svg>',
+    email: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></svg>',
+    theme: '<svg class="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+    menu: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="17" x2="20" y2="17"/></svg>',
+    linkedin: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>',
+    github: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>'
+  };
+
+  // ============================================================
+  // HELPERS
+  // ============================================================
+  const h = (tag, attrs = {}, children = []) => {
+    const el = document.createElement(tag);
+    for (const k in attrs) {
+      if (attrs[k] === null || attrs[k] === undefined || attrs[k] === false) continue;
+      if (k === 'class') el.className = attrs[k];
+      else if (k === 'html') el.innerHTML = attrs[k];
+      else if (k.startsWith('on') && typeof attrs[k] === 'function') el.addEventListener(k.slice(2).toLowerCase(), attrs[k]);
+      else el.setAttribute(k, attrs[k]);
+    }
+    (Array.isArray(children) ? children : [children]).forEach(c => {
+      if (c === null || c === undefined || c === false) return;
+      if (typeof c === 'string') el.appendChild(document.createTextNode(c));
+      else el.appendChild(c);
+    });
+    return el;
+  };
+
+  // Replace __RESUME__ placeholder with actual resume filename
+  const resolveHref = (href, resumeFile) => href === '__RESUME__' ? resumeFile : href;
+
+  // Build prompt like: kunal@mumbai:~$
+  const promptHTML = (user, host) =>
+    `<span class="prompt"><span class="user">${user}</span><span class="sep">@</span><span class="path">${host}</span><span class="sep">:</span><span class="path">~</span><span class="caret">$</span></span>`;
+
+  // Create a button/link
+  const btn = (action, resumeFile) => {
+    const type = action.type || 'ghost';
+    const href = resolveHref(action.href, resumeFile);
+    const attrs = {
+      class: `btn btn-${type}`,
+      href: href
+    };
+    if (action.download) attrs.download = '';
+    if (action.external) { attrs.target = '_blank'; attrs.rel = 'noopener noreferrer'; }
+
+    const el = h('a', attrs);
+    if (action.icon && ICONS[action.icon] && action.icon !== 'arrow') {
+      el.innerHTML = ICONS[action.icon];
+    }
+    el.appendChild(document.createTextNode(action.label));
+    if (action.icon === 'arrow') el.insertAdjacentHTML('beforeend', ICONS.arrow);
+    return el;
+  };
+
+  // ============================================================
+  // RENDERERS
+  // ============================================================
+
+  function renderMeta(meta) {
+    document.title = meta.title || 'Portfolio';
+    const desc = document.querySelector('meta[name="description"]');
+    if (desc) desc.setAttribute('content', meta.description || '');
+    else document.head.appendChild(h('meta', { name: 'description', content: meta.description || '' }));
+    document.head.appendChild(h('meta', { name: 'author', content: meta.author || '' }));
+  }
+
+  function renderHeader(data) {
+    const resume = data.meta.resumeFile;
+    const nav = document.getElementById('navContainer');
+
+    // Brand
+    const brand = h('a', { href: '#top', class: 'brand', 'aria-label': 'Home' }, [
+      h('span', { class: 'dot', 'aria-hidden': 'true' }),
+      h('span', { class: 'tilde' }, data.brand.initial),
+      data.brand.name
+    ]);
+
+    // Nav links
+    const links = h('ul', { class: 'nav-links', id: 'navLinks' });
+    data.navLinks.forEach(link => {
+      links.appendChild(h('li', {}, [ h('a', { href: link.href }, link.label) ]));
+    });
+
+    // Actions (resume + theme + menu)
+    const actions = h('div', { class: 'nav-actions' });
+
+    const resumeBtn = h('a', {
+      href: resume, download: '', class: 'icon-btn',
+      'aria-label': 'Download resume PDF', title: 'Download resume',
+      html: ICONS.download
+    });
+
+    const themeBtn = h('button', {
+      class: 'icon-btn', id: 'themeToggle',
+      'aria-label': 'Toggle color theme', 'aria-pressed': 'false',
+      html: ICONS.theme
+    });
+
+    const menuBtn = h('button', {
+      class: 'icon-btn menu-btn', id: 'menuBtn',
+      'aria-label': 'Toggle menu', 'aria-expanded': 'false', 'aria-controls': 'navLinks',
+      html: ICONS.menu
+    });
+
+    actions.append(resumeBtn, themeBtn, menuBtn);
+    nav.append(brand, links, actions);
+  }
+
+  function renderHero(hero, meta) {
+    const resumeFile = meta.resumeFile;
+
+    // LEFT: content column (prompts, title, desc, meta chips, actions)
+    const content = h('div', { class: 'hero-content' });
+
+    content.appendChild(h('div', {
+      class: 'terminal-line',
+      html: `${promptHTML(hero.promptUser, hero.promptHost)} <span class="prompt cmd"> ${hero.promptCommand}</span>`
+    }));
+    content.appendChild(h('div', {
+      class: 'terminal-line',
+      html: `<span class="prompt cmd">&gt; ${hero.promptOutput}</span>`
+    }));
+
+    content.appendChild(h('h1', {
+      class: 'hero-title', id: 'hero-title',
+      html: `${hero.firstName} <span class="accent">${hero.lastNameAccent}</span><span class="blink" aria-hidden="true"></span>`
+    }));
+
+    content.appendChild(h('p', { class: 'hero-desc', html: hero.description }));
+
+    const metaEl = h('div', { class: 'hero-meta', role: 'group', 'aria-label': 'Key info' });
+    hero.meta.forEach(m => {
+      const dot = m.statusDot ? '<span class="status-dot" aria-hidden="true"></span>' : '';
+      metaEl.appendChild(h('span', {
+        html: `${dot}<span class="key">${m.key}</span> :: ${m.value}`
+      }));
+    });
+    content.appendChild(metaEl);
+
+    const actions = h('div', { class: 'hero-actions' });
+    hero.actions.forEach(a => actions.appendChild(btn(a, resumeFile)));
+    content.appendChild(actions);
+
+    // RIGHT: portrait (only if profileImage is set in data.json)
+    const gridChildren = [ content ];
+    if (meta.profileImage) {
+      const portrait = h('figure', { class: 'hero-portrait' }, [
+        h('img', {
+          src: meta.profileImage,
+          alt: meta.profileImageAlt || meta.author || 'Portrait',
+          loading: 'eager',
+          decoding: 'async'
+        }),
+        h('figcaption', {
+          class: 'caption',
+          html: '<span>./portrait.jpg</span><span class="live">online</span>'
+        })
+      ]);
+      gridChildren.push(portrait);
+    }
+
+    const grid = h('div', { class: 'hero-grid' }, gridChildren);
+
+    const body = h('div', { class: 'terminal-body' }, [ grid ]);
+
+    const terminal = h('div', { class: 'terminal-window' }, [
+      h('div', { class: 'terminal-bar' }, [
+        h('div', { class: 'lights', 'aria-hidden': 'true', html: '<span></span><span></span><span></span>' }),
+        h('span', { class: 'path' }, hero.terminalTitle)
+      ]),
+      body
+    ]);
+
+    return h('section', { class: 'hero', id: 'top', 'aria-labelledby': 'hero-title' }, [
+      h('div', { class: 'container' }, [ terminal ])
+    ]);
+  }
+
+  function sectionHead(num, title, id) {
+    return h('div', { class: 'section-head reveal' }, [
+      h('span', { class: 'section-num' }, `// ${num}`),
+      h('h2', { id: id, html: `${title}<span class="accent">()</span>` })
+    ]);
+  }
+
+  function renderAbout(about) {
+    const text = h('div', { class: 'about-text reveal' });
+    about.paragraphs.forEach(p => text.appendChild(h('p', { html: p })));
+
+    const statsList = h('ul', { class: 'stats-list' });
+    about.stats.forEach(s => {
+      statsList.appendChild(h('li', {}, [
+        h('span', { class: 'k' }, s.key),
+        h('span', { class: 'v', html: `${s.value}<span class="unit">${s.unit}</span>` })
+      ]));
+    });
+
+    const card = h('aside', { class: 'stats-card reveal', 'aria-label': 'Career at a glance' }, [
+      h('div', { class: 'stats-card-head' }, about.statsCardTitle),
+      statsList
+    ]);
+
+    return h('section', { id: 'about', 'aria-labelledby': 'about-title' }, [
+      h('div', { class: 'container' }, [
+        sectionHead(about.sectionNumber, about.title, 'about-title'),
+        h('div', { class: 'about-grid' }, [ text, card ])
+      ])
+    ]);
+  }
+
+  function renderSkills(skills) {
+    const grid = h('div', { class: 'skills-grid' });
+    skills.groups.forEach(g => {
+      const body = h('div', { class: 'skill-body' });
+      g.items.forEach(item => body.appendChild(h('span', {}, item)));
+      grid.appendChild(h('div', { class: 'skill-card reveal' }, [
+        h('div', { class: 'skill-head', html: `<span class="sig">›</span> <span class="name">${g.name}</span>` }),
+        body
+      ]));
+    });
+
+    return h('section', { id: 'skills', 'aria-labelledby': 'skills-title' }, [
+      h('div', { class: 'container' }, [
+        sectionHead(skills.sectionNumber, skills.title, 'skills-title'),
+        grid
+      ])
+    ]);
+  }
+
+  function renderProjects(projects) {
+    const grid = h('div', { class: 'projects-grid' });
+    projects.items.forEach(p => {
+      const bullets = h('ul', { class: 'project-bullets' });
+      (p.bullets || []).forEach(b => bullets.appendChild(h('li', {}, b)));
+
+      const stack = h('div', { class: 'tech-stack' });
+      (p.stack || []).forEach(t => stack.appendChild(h('span', {}, t)));
+
+      const body = h('div', { class: 'project-body' }, [
+        h('h3', { class: 'project-title' }, p.title),
+        h('div', { class: 'project-role' }, p.role),
+        h('p', { class: 'project-desc' }, p.description),
+        bullets,
+        stack
+      ]);
+
+      const head = h('div', { class: 'project-head' }, [
+        h('span', { class: 'label' }, p.label),
+        p.tag ? h('span', { class: 'tag' }, p.tag) : null
+      ]);
+
+      grid.appendChild(h('article', {
+        class: `project reveal${p.featured ? ' featured' : ''}`
+      }, [ head, body ]));
+    });
+
+    return h('section', { id: 'projects', 'aria-labelledby': 'projects-title' }, [
+      h('div', { class: 'container' }, [
+        sectionHead(projects.sectionNumber, projects.title, 'projects-title'),
+        grid
+      ])
+    ]);
+  }
+
+  function renderExperience(exp) {
+    const timeline = h('div', { class: 'timeline' });
+    exp.items.forEach(item => {
+      timeline.appendChild(h('div', { class: 'exp reveal' }, [
+        h('div', { class: 'exp-date' }, item.date),
+        h('div', { class: 'exp-content' }, [
+          h('h3', {}, item.role),
+          h('span', { class: 'company' }, `@ ${item.company}`),
+          h('p', {}, item.description)
+        ])
+      ]));
+    });
+
+    return h('section', { id: 'experience', 'aria-labelledby': 'experience-title' }, [
+      h('div', { class: 'container' }, [
+        sectionHead(exp.sectionNumber, exp.title, 'experience-title'),
+        timeline
+      ])
+    ]);
+  }
+
+  function renderEducation(edu) {
+    const grid = h('div', { class: 'edu-grid' });
+    edu.items.forEach(item => {
+      grid.appendChild(h('div', { class: 'edu-card reveal' }, [
+        h('h3', {}, item.degree),
+        h('div', { class: 'edu-inst' }, item.institution),
+        h('div', { class: 'edu-year' }, item.year)
+      ]));
+    });
+
+    return h('section', { id: 'education', 'aria-labelledby': 'education-title' }, [
+      h('div', { class: 'container' }, [
+        sectionHead(edu.sectionNumber, edu.title, 'education-title'),
+        grid
+      ])
+    ]);
+  }
+
+  function renderContact(contact, resumeFile) {
+    const actions = h('div', { class: 'contact-actions' });
+    contact.actions.forEach(a => actions.appendChild(btn(a, resumeFile)));
+
+    const body = h('div', { class: 'contact-body' }, [
+      h('div', { class: 'typed' }, [
+        h('span', { html: promptHTML(contact.promptUser, contact.promptHost) }),
+        h('span', { style: 'color:var(--fg)' }, ` ${contact.promptCommand}`),
+        h('br'),
+        h('span', { class: 'comment', html: `› ${contact.promptOutput}` })
+      ]),
+      h('h2', { id: 'contact-title', html: `${contact.heading} <span class="accent">${contact.headingAccent}</span>` }),
+      h('p', {}, contact.description),
+      actions
+    ]);
+
+    const wrap = h('div', { class: 'contact-terminal reveal' }, [
+      h('div', { class: 'terminal-bar' }, [
+        h('div', { class: 'lights', 'aria-hidden': 'true', html: '<span></span><span></span><span></span>' }),
+        h('span', { class: 'path' }, contact.terminalTitle)
+      ]),
+      body
+    ]);
+
+    return h('section', { id: 'contact', 'aria-labelledby': 'contact-title' }, [
+      h('div', { class: 'container' }, [ wrap ])
+    ]);
+  }
+
+  function renderFooter(footer) {
+    const inner = document.getElementById('footerInner');
+    const year = new Date().getFullYear();
+    inner.append(
+      h('span', { class: 'prompt-sm', html: `echo "${footer.leftText.replace('{YEAR}', year)}"` }),
+      h('span', {}, footer.rightText)
+    );
+  }
+
+  function renderApp(data) {
+    renderMeta(data.meta);
+    renderHeader(data);
+
+    const main = document.getElementById('main');
+    main.innerHTML = ''; // remove loading state
+    main.append(
+      renderHero(data.hero, data.meta),
+      renderAbout(data.about),
+      renderSkills(data.skills),
+      renderProjects(data.projects),
+      renderExperience(data.experience),
+      renderEducation(data.education),
+      renderContact(data.contact, data.meta.resumeFile)
+    );
+
+    renderFooter(data.footer);
+    bindBehaviors();
+  }
+
+  // ============================================================
+  // BEHAVIORS (theme, scroll, menu, reveal) — bind after render
+  // ============================================================
+  function bindBehaviors() {
+    // Theme toggle
+    const root = document.documentElement;
+    const themeBtn = document.getElementById('themeToggle');
+    let stored = null;
+    try { stored = localStorage.getItem('theme'); } catch (e) {}
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    const initial = stored || (prefersLight ? 'light' : 'dark');
+    if (initial === 'light') root.setAttribute('data-theme', 'light');
+    themeBtn.setAttribute('aria-pressed', initial === 'light' ? 'true' : 'false');
+    themeBtn.addEventListener('click', () => {
+      const isLight = root.getAttribute('data-theme') === 'light';
+      if (isLight) root.removeAttribute('data-theme');
+      else root.setAttribute('data-theme', 'light');
+      themeBtn.setAttribute('aria-pressed', !isLight ? 'true' : 'false');
+      try { localStorage.setItem('theme', isLight ? 'dark' : 'light'); } catch (e) {}
+    });
+
+    // Sticky header border
+    const header = document.getElementById('siteHeader');
+    const onScroll = () => {
+      if (window.scrollY > 8) header.classList.add('scrolled');
+      else header.classList.remove('scrolled');
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Mobile menu
+    const menuBtn = document.getElementById('menuBtn');
+    const nav = document.getElementById('navLinks');
+    menuBtn.addEventListener('click', () => {
+      const open = nav.classList.toggle('open');
+      menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    nav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        nav.classList.remove('open');
+        menuBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Reveal on scroll
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const els = document.querySelectorAll('.reveal');
+    if (reduce || !('IntersectionObserver' in window)) {
+      els.forEach(el => el.classList.add('visible'));
+    } else {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      els.forEach(el => io.observe(el));
+    }
+  }
+
+  // ============================================================
+  // LOAD data.json
+  // ============================================================
+  function showError(msg) {
+    const main = document.getElementById('main');
+    main.innerHTML = '';
+    main.appendChild(h('div', {
+      class: 'app-error',
+      html: `<strong>Could not load data.json</strong><br><br>${msg}<br><br>Make sure <code>data.json</code> sits next to this HTML file. If you opened this via <code>file://</code>, your browser may block <code>fetch</code>; run a tiny local server:<br><br><code>python3 -m http.server 8000</code><br><br>…then visit <code>http://localhost:8000</code>.`
+    }));
+  }
+
+  fetch('data.json', { cache: 'no-cache' })
+    .then(r => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .then(renderApp)
+    .catch(err => {
+      console.error('[portfolio] failed to load data.json:', err);
+      showError(String(err.message || err));
+    });
+
+})();
+</script>
+</body>
+</html>
