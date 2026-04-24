@@ -47,8 +47,8 @@
     "title": "about",
     "paragraphs": [
       "Over 15+ years, I've moved from Flash/ActionScript and PHP to leading React micro-frontends for one of the world's largest financial software companies. Today I work as a <strong>Project Lead at Persistent Systems</strong>, embedded with Intuit — analyzing PRDs, running feasibility studies, leading POCs, and shipping UI that reaches millions of small-business owners at tax time.",
-      "My sweet spot is the intersection of <strong>frontend architecture</strong> and <strong>integration engineering</strong>: <code>OAuth2</code> flows, browser extensions, Slack apps, and enterprise connectors — where the hard problems live in state, permissions, and cross-platform consistency. I've owned end-to-end delivery for Bloomfire's Chrome/Edge extension and Slack app, and led HaloPSA and ConnectWise integrations with GoTo Resolve.",
-      "I care about <strong>performance</strong> (<code>Suspense</code>, lazy loading, profiling), <strong>design systems</strong> (QBDS → IDS migration at Intuit), and the small stuff — accessibility, <code>i18n</code>, feature-flagged rollouts. Outside work, I tinker with Claude-powered MCP servers and a calorie-tracking side project on <code>n8n</code> + <code>Supabase</code>."
+      "My sweet spot is the intersection of <strong>frontend architecture</strong> and <strong>integration engineering</strong>: <code>OAuth2</code> flows, browser extensions, Slack apps, and enterprise connectors — where the hard problems live in state, permissions, and cross-platform consistency.",
+      "Beyond the terminal, I'm a father of two very hyper-active daughters who keep me on my toes. I'm a dedicated <strong>vegan</strong>, fitness and diet conscious, and a total <strong>plant person</strong>. I also have a deep passion for exploring new enhancements in the <strong>AI world</strong>, often tinkering with Claude-powered MCP servers and AI-driven automation."
     ],
     "statsCardTitle": "~/stats.json",
     "stats": [
@@ -57,7 +57,7 @@
       { "key": "integrations_led", "value": "10+", "unit": "projects" },
       { "key": "primary_stack",    "value": "React", "unit": "/TS" },
       { "key": "education",        "value": "B.E.", "unit": "IT" },
-      { "key": "languages",        "value": "3",   "unit": "spoken" }
+      { "key": "lifestyle",        "value": "Vegan", "unit": "🌱" }
     ]
   },
 
