@@ -2,6 +2,8 @@
 
 A modern, terminal-inspired personal portfolio website built with Vanilla HTML, CSS, and JavaScript. The project is designed to be lightweight, responsive, and easily maintainable through a central JSON data file.
 
+**Live Preview:** [kunalrbhatia.dev](https://kunalrbhatia.dev/)
+
 ![Portfolio Preview](me.png)
 
 ## 🚀 Features
