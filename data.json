@@ -1,7 +1,7 @@
 {
   "meta": {
     "title": "kunal.bhatia ~ senior frontend engineer",
-    "description": "Kunal Rajan Bhatia — Senior Frontend Engineer & Project Lead. 15+ years shipping React at scale: micro-frontends, integrations, browser extensions.",
+    "description": "Kunal Rajan Bhatia — Senior Frontend Engineer & Project Lead. 15+ years shipping React at scale: micro-frontends, AI integrations, and algorithmic trading systems.",
     "author": "Kunal Rajan Bhatia",
     "resumeFile": "RESUME_KUNAL_BHATIA.pdf",
     "profileImage": "me.png",
@@ -48,7 +48,7 @@
     "paragraphs": [
       "Over 15+ years, I've moved from Flash/ActionScript and PHP to leading React micro-frontends for one of the world's largest financial software companies. Today I work as a <strong>Project Lead at Persistent Systems</strong>, embedded with Intuit — analyzing PRDs, running feasibility studies, leading POCs, and shipping UI that reaches millions of small-business owners at tax time.",
       "My sweet spot is the intersection of <strong>frontend architecture</strong> and <strong>integration engineering</strong>: <code>OAuth2</code> flows, browser extensions, Slack apps, and enterprise connectors — where the hard problems live in state, permissions, and cross-platform consistency.",
-      "Beyond the terminal, I'm a father of two very hyper-active daughters who keep me on my toes. I'm a dedicated <strong>vegan</strong>, fitness and diet conscious, and a total <strong>plant person</strong>. I also have a deep passion for exploring new enhancements in the <strong>AI world</strong>, often tinkering with Claude-powered MCP servers and AI-driven automation."
+      "Beyond the terminal, I'm a father of two very hyper-active daughters who keep me on my toes. I'm a dedicated <strong>vegan</strong>, fitness and diet conscious, and a total <strong>plant person</strong>. I also have a deep passion for exploring new enhancements in the <strong>AI world</strong> and <strong>algorithmic trading</strong>, often tinkering with Gemini/Claude-powered automation and enterprise-grade trading systems."
     ],
     "statsCardTitle": "~/stats.json",
     "stats": [
@@ -67,7 +67,7 @@
     "groups": [
       {
         "name": "frontend",
-        "items": ["React", "TypeScript", "JavaScript", "Material-UI", "Tailwind CSS", "SASS", "Vite", "React Hooks", "i18n"]
+        "items": ["React", "TypeScript", "JavaScript", "Next.js", "Material-UI", "Tailwind CSS", "SASS", "Vite", "React Hooks", "i18n"]
       },
       {
         "name": "backend",
@@ -75,11 +75,11 @@
       },
       {
         "name": "architecture",
-        "items": ["Micro-frontends", "Design Systems", "Feature Flags", "Forge 2.0", "Slack Bolt SDK", "Chrome/Edge APIs", "MCP Servers"]
+        "items": ["Micro-frontends", "Design Systems", "Feature Flags", "Forge 2.0", "Slack Bolt SDK", "Chrome/Edge APIs", "MCP Servers", "n8n", "Gemini AI"]
       },
       {
         "name": "devops_testing",
-        "items": ["Jest", "Cypress", "GitHub Actions", "Jenkins", "Docker", "GCP", "AWS", "Azure"]
+        "items": ["Jest", "Cypress", "GitHub Actions", "Jenkins", "Docker", "GCP", "AWS", "Azure", "Oracle Cloud", "pnpm", "PM2"]
       }
     ]
   },
@@ -103,6 +103,71 @@
           "Migrated QBDS → IDS design system across repos; applied state filing updates and localization"
         ],
         "stack": ["React", "IDS", "Micro-frontend", "Feature Flags", "i18n", "Suspense"]
+      },
+      {
+        "label": "kunalrbhatia / smart-api",
+        "tag": "ALGO",
+        "title": "SmartAPI Intraday Trading Algorithm",
+        "role": "Lead Developer",
+        "description": "Enterprise-grade intraday trading algorithm for automating Short Straddle strategies using Angel One's SmartAPI.",
+        "bullets": [
+          "Automated Smart Login with TOTP and compliance-ready IP/MAC resolution",
+          "Real-time MTM tracking and risk management for automated execution",
+          "Achieved 86.2% test coverage with a robust modular architecture"
+        ],
+        "stack": ["Node.js", "TypeScript", "SmartAPI", "Jest", "pnpm"]
+      },
+      {
+        "label": "kunalrbhatia / snap-chat-track",
+        "tag": "AI",
+        "title": "Snap. Chat. Track. (AI Nutrition Bot)",
+        "role": "Creator",
+        "description": "AI-powered Telegram nutrition bot that allows users to log meals via text or photo with instant macro estimation.",
+        "bullets": [
+          "Integrated Gemini AI for instant macro-estimation from meal photos and descriptions",
+          "Seamless meal logging and history tracking via Telegram interface",
+          "Built using n8n workflows for automated data processing and Supabase storage"
+        ],
+        "stack": ["n8n", "Gemini AI", "Supabase", "Telegram API"]
+      },
+      {
+        "label": "kunalrbhatia / snap-dashboard",
+        "tag": "DASHBOARD",
+        "title": "Snap Analytics Dashboard",
+        "role": "Full-Stack Developer",
+        "description": "Analytics dashboard for dieticians to track member compliance and calorie trends from Snap. Chat. Track. bot data.",
+        "bullets": [
+          "Visualized 14-day calorie trends and compliance metrics for health professionals",
+          "Built with Next.js 15 and Tailwind v4 for a modern, high-performance UI",
+          "Integrated with PostgreSQL for robust data management and analytics"
+        ],
+        "stack": ["Next.js 15", "Tailwind CSS v4", "PostgreSQL", "React"]
+      },
+      {
+        "label": "kunalrbhatia / orb-algo",
+        "tag": "ALGO",
+        "title": "ORB (Open Range Breakout) Algo",
+        "role": "Lead Developer",
+        "description": "Intraday options trading algorithm that identifies momentum breakouts based on morning price scans and OI levels.",
+        "bullets": [
+          "Automated Nifty 50 morning scan to identify high-momentum gainers and losers",
+          "Hedged trade entry with automated trailing stop-loss management",
+          "Integrated Telegram notifications for real-time trade alerts and PnL updates"
+        ],
+        "stack": ["Node.js", "TypeScript", "SmartAPI", "node-cron", "PM2"]
+      },
+      {
+        "label": "kunalrbhatia / nifty-iron-condor",
+        "tag": "ALGO",
+        "title": "Nifty Monthly Iron Condor Algo",
+        "role": "Lead Developer",
+        "description": "Automated positional trading strategy for Nifty 50 monthly options, managing Iron Condor positions through expiry.",
+        "bullets": [
+          "Delta-based automated entry and single-phase risk adjustment (Iron Butterfly conversion)",
+          "State reconstruction logic for robust execution without requiring a central database",
+          "Automated scrip management and Telegram integration for remote monitoring"
+        ],
+        "stack": ["Node.js", "SmartAPI", "Telegram API", "Winston"]
       },
       {
         "label": "bloomfire / browser-extension",
