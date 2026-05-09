@@ -22,5 +22,5 @@ jobs:
           username: ${{ secrets.ORACLE_USER }}
           key: ${{ secrets.ORACLE_SSH_KEY }}
           script: |
-            cd ~/myportfolio
+            cd /var/www/myportfolio
             git pull origin master
