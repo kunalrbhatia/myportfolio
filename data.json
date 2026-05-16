@@ -117,9 +117,10 @@
         ],
         "stack": ["Node.js", "TypeScript", "SmartAPI", "Jest", "pnpm"]
       },
-      {
+{
         "label": "kunalrbhatia / snap-chat-track",
         "tag": "AI",
+        "demo": "https://www.youtube.com/watch?v=a8ZlwnZkmc0",
         "title": "Snap. Chat. Track. (AI Nutrition Bot)",
         "role": "Creator",
         "description": "AI-powered Telegram nutrition bot that allows users to log meals via text or photo with instant macro estimation.",
@@ -130,9 +131,10 @@
         ],
         "stack": ["n8n", "Gemini AI", "Supabase", "Telegram API"]
       },
-      {
+{
         "label": "kunalrbhatia / snap-dashboard",
         "tag": "DASHBOARD",
+        "demo": "https://www.youtube.com/watch?v=a8ZlwnZkmc0",
         "title": "Snap Analytics Dashboard",
         "role": "Full-Stack Developer",
         "description": "Analytics dashboard for dieticians to track member compliance and calorie trends from Snap. Chat. Track. bot data.",
